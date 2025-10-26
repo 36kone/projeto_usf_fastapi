@@ -1,32 +1,90 @@
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, UTC, timedelta
+from typing import Any
+from uuid import UUID
+
+from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 
 from core.config import settings
 from fastapi import Depends, HTTPException
-from sqlalchemy.orm import Session
 from jose import jwt, JWTError
 
 from db.database import pegar_sessao
-from main import oauth2_scheme
+from models.user.user import User
+from schemas import UserResponse, Token
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
 
-def criar_token(id_usuario, duracao_token=timedelta(minutes=30)):
-    data_expire = datetime.now(timezone.utc) + duracao_token
-    dic_info = {"sub": str(id_usuario), "exp": data_expire}
-    jwt_codificado = jwt.encode(dic_info, settings.SECRET_KEY, settings.ALGORITHM)
-    return jwt_codificado
+def create_access_token(data: dict, expires_delta: timedelta = None) -> str:
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.now(UTC) + expires_delta
+    else:
+        expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
 
 
-def verificar_token(
-    token: str = Depends(oauth2_scheme), session: Session = Depends(pegar_sessao)
-):
+def create_user_access_token(user):
+    access_token = create_access_token(
+        {
+            "id": str(user.id),
+            "username": str(user.email),
+        }
+    )
+
+    return Token(
+        access_token=access_token,
+        token_type="bearer",
+        user=UserResponse.model_validate(user),
+    )
+
+
+def decode_access_token(token: str) -> dict[str, Any] | None:
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        return payload
+    except JWTError:
+        return None
+
+
+def verify_token(token: str = Depends(oauth2_scheme)):
     try:
         dic_info = jwt.decode(token, settings.SECRET_KEY, settings.ALGORITHM)
-        id_usuario = dic_info.get("sub")
+        user_id = dic_info.get("sub")
     except JWTError:
-        raise HTTPException(status_code=401, detail="Acesso negado, verifique o token")
-    # usuario = session.query(Usuario).filter(Usuario.id == id_usuario).first()
-    if not id_usuario:
+        raise HTTPException(status_code=401, detail="Access denied, verify your token")
+    if not user_id:
         raise HTTPException(
-            status_code=401, detail="Acesso invalido, verifique a validade do token"
+            status_code=401, detail="Access denied, verify the token expiration"
         )
-    return  # usuario
+    return
+
+
+def get_auth_user(token: str = Depends(oauth2_scheme), db: Session = Depends(pegar_sessao())):
+    credentials_exception = HTTPException(
+        status_code=401,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+
+    payload = decode_access_token(token)
+    if payload is None:
+        raise credentials_exception
+
+    try:
+        user_id = UUID(payload.get("id"))
+    except Exception:
+        raise credentials_exception
+
+    query = select(User).where(User.id == user_id)
+
+    user = db.scalar(query)
+
+    if not user_id:
+        raise credentials_exception
+    return user
