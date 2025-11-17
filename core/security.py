@@ -11,8 +11,10 @@ from fastapi import Depends, HTTPException
 from jose import jwt, JWTError
 
 from db.database import pegar_sessao
-from models.user.user import User
-from schemas import UserResponse, Token
+from models.Cliente.cliente import Cliente
+from schemas import ClienteResposta, Token
+from passlib.context import CryptContext
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
 
@@ -38,7 +40,7 @@ def create_user_access_token(user):
     return Token(
         access_token=access_token,
         token_type="bearer",
-        user=UserResponse.model_validate(user),
+        user=ClienteResposta.model_validate(user),
     )
 
 
@@ -81,10 +83,23 @@ def get_auth_user(token: str = Depends(oauth2_scheme), db: Session = Depends(peg
     except Exception:
         raise credentials_exception
 
-    query = select(User).where(User.id == user_id)
+    query = select(Cliente).where(Cliente.id == user_id)
 
     user = db.scalar(query)
 
     if not user_id:
         raise credentials_exception
     return user
+
+
+def get_password_hash(password: str) -> str:
+    if len(password) > 72:
+        raise ValueError("Password too long max 72 characters")
+    return pwd_context.hash(password)
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return pwd_context.verify(plain_password, hashed_password)
+
+
+def hash_password(password: str) -> str:
+    return pwd_context.hash(password)

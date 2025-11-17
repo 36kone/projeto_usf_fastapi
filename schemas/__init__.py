@@ -1,9 +1,9 @@
-from .user.user_schema import UserSchema, UserResponse, CreateUser
+from .Cliente.cliente_schema import ClienteSchema, ClienteResposta, CriarCliente
 from .auth.auth_schema import Token
 
 __all__ = [
-    "UserSchema",
-    "UserResponse",
-    "CreateUser",
+    "ClienteSchema",
+    "ClienteResposta",
+    "CriarCliente",
     "Token",
 ]
