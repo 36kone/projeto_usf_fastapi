@@ -1,2 +1,2 @@
-from models.Cliente.cliente import Cliente
+from models.cliente.cliente import Cliente
 

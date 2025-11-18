@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from schemas.Cliente.cliente_schema import ClienteResposta
+from schemas.cliente.cliente_schema import ClienteResposta
 
 
 class Token(BaseModel):

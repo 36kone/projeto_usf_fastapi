@@ -11,7 +11,7 @@ from fastapi import Depends, HTTPException
 from jose import jwt, JWTError
 
 from db.database import pegar_sessao
-from models.Cliente.cliente import Cliente
+from models.cliente.cliente import Cliente
 from schemas import ClienteResposta, Token
 from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

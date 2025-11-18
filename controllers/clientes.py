@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from schemas.Cliente.cliente_schema import CriarCliente, ClienteResposta, AtualizarCliente
+from schemas.cliente.cliente_schema import CriarCliente, ClienteResposta, AtualizarCliente
 from db.database import pegar_sessao
 from services.cliente import cliente_service
 

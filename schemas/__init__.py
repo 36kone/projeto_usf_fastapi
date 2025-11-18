@@ -1,4 +1,4 @@
-from .Cliente.cliente_schema import ClienteSchema, ClienteResposta, CriarCliente
+from .cliente.cliente_schema import ClienteSchema, ClienteResposta, CriarCliente
 from .auth.auth_schema import Token
 
 __all__ = [
