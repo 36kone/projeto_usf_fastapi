@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from schemas.Cliente.cliente_schema import CriarCliente, AtualizarCliente
-from models.Cliente.cliente import Cliente
+from schemas.cliente.cliente_schema import CriarCliente, AtualizarCliente
+from models.cliente.cliente import Cliente
 from core.security import get_password_hash
 from datetime import datetime,UTC
 from fastapi import HTTPException
@@ -30,12 +30,11 @@ def pegar_cliente(id: int, session: Session):
 
 def atualizar_cliente(dados: AtualizarCliente, session: Session):
     entity = pegar_cliente(dados.id, session)
+    
     if not entity:
         raise HTTPException(status_code=404, detail="Cliente não encontrado.")
-        
-
+    
     try: 
-
         for key, value in dados.model_dump(exclude_unset=True).items():
             setattr(entity, key, value)
 
