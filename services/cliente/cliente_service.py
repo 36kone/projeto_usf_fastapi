@@ -14,7 +14,6 @@ def criar_cliente(cliente: CriarCliente,session: Session):
         senha = get_password_hash(cliente.senha)
     )
 
-
     session.add(entity)
     session.commit()
     session.refresh(entity)
@@ -26,7 +25,10 @@ def ler_cliente(session: Session):
     return session.query(Cliente).limit(10).all()
 
 def pegar_cliente(id: int, session: Session):
-    return session.query(Cliente).filter(Cliente.id == id).first()
+    entity =  session.query(Cliente).filter(Cliente.id == id).first()
+    
+    if not entity:
+        raise HTTPException(status_code=404, detail="Cliente não encontrado.")
 
 def atualizar_cliente(dados: AtualizarCliente, session: Session):
     entity = pegar_cliente(dados.id, session)
@@ -62,9 +64,6 @@ def soft_delete_cliente(id: int, session: Session):
 def hard_delete_cliente (id: int, session: Session):
     entity = pegar_cliente(id, session)
     
-    if not entity:
-        raise HTTPException(status_code=404, detail="Cliente não encontrado.")
-        
     session.delete(entity)
     session.commit()
     return {"message": "Cliente deletado permanentemante."}
