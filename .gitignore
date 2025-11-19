@@ -1,2 +1,5 @@
 .env
 __pycache__/
+identifier.sqlite
+identifier
+sqlite
