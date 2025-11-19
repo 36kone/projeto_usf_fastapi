@@ -29,7 +29,7 @@ def pegar_cliente(id: int, session: Session):
     
     if not entity:
         raise HTTPException(status_code=404, detail="Cliente não encontrado.")
-
+    return entity
 def atualizar_cliente(dados: AtualizarCliente, session: Session):
     entity = pegar_cliente(dados.id, session)
     
