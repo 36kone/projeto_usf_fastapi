@@ -1,6 +1,5 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
 
 from pydantic import BaseModel, EmailStr, ConfigDict
 
@@ -27,7 +26,6 @@ class AtualizarCliente(BaseModel):
     email: Optional[EmailStr] = None
     celular: Optional[str] = None
     endereco: Optional[str] = None
-
 
 
 class ClienteResposta(ClienteSchema):

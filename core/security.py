@@ -14,6 +14,7 @@ from db.database import pegar_sessao
 from models.cliente.cliente import Cliente
 from schemas import ClienteResposta, Token
 from passlib.context import CryptContext
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -67,7 +68,9 @@ def verify_token(token: str = Depends(oauth2_scheme)):
     return
 
 
-def get_auth_user(token: str = Depends(oauth2_scheme), db: Session = Depends(pegar_sessao())):
+def get_auth_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(pegar_sessao())
+):
     credentials_exception = HTTPException(
         status_code=401,
         detail="Could not validate credentials",
@@ -96,6 +99,7 @@ def get_password_hash(password: str) -> str:
     if len(password) > 72:
         raise ValueError("Password too long max 72 characters")
     return pwd_context.hash(password)
+
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)

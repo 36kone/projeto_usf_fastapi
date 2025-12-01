@@ -1,8 +1,8 @@
 from datetime import datetime, date
-from typing import Optional
-from uuid import UUID
+from typing import Optional, List
 
 from pydantic import BaseModel, ConfigDict
+from schemas.pedido.item_pedido_schema import CriarItemPedido
 
 
 class PedidoSchema(BaseModel):
@@ -11,16 +11,14 @@ class PedidoSchema(BaseModel):
     data: date
     status: str
     total: float
-    produto_id: int
-    
 
 
 class CriarPedido(BaseModel):
     cliente_id: int
     data: date
     status: str
-    total: float
-    produto_id: int
+    itens: list[CriarItemPedido]
+
 
 class AtualizarPedido(BaseModel):
     id: int
@@ -28,12 +26,12 @@ class AtualizarPedido(BaseModel):
     data: Optional[date] = None
     status: Optional[str] = None
     total: Optional[float] = None
-    produto_id: Optional[int] = None
-
+    itens: Optional[List[CriarItemPedido]]
 
 
 class PedidoResposta(PedidoSchema):
     id: int
+    itens: list[CriarItemPedido]
     created_at: datetime
     updated_at: Optional[datetime] = None
     deleted_at: Optional[datetime] = None

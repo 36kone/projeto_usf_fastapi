@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import Optional
-from uuid import UUID
 
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, ConfigDict
 
 
 class ProdutoSchema(BaseModel):
@@ -26,7 +25,6 @@ class AtualizarProduto(BaseModel):
     descricao: Optional[str] = None
     preco: Optional[float] = None
     estoque: Optional[int] = None
-
 
 
 class ProdutoResposta(ProdutoSchema):
