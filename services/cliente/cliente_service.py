@@ -35,6 +35,14 @@ def pegar_cliente_por_id(id: int, session: Session):
     return entity
 
 
+def pegar_cliente_por_email(email: str, session: Session):
+    entity = session.query(Cliente).filter(Cliente.email == email).first()
+
+    if not entity:
+        raise HTTPException(status_code=404, detail="Cliente não encontrado.")
+    return entity
+
+
 def atualizar_cliente(dados: AtualizarCliente, session: Session):
     entity = pegar_cliente_por_id(dados.id, session)
 

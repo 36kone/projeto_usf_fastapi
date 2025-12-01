@@ -61,6 +61,12 @@ O projeto implementa um **CRUD** (Create, Read, Update, Delete) para **Clientes*
 
 5. **Endpoints Disponíveis**:
     ```
+    Login
+
+    POST /login - Realiza login do cliente (Utilize o email do cliente teste cadastrado: cliente@email.com e a senha: 123)
+
+    ----------------------------------------------
+
     Clientes
 
     GET /clientes - Listar todos os clientes

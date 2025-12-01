@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from pydantic import EmailStr
 from sqlalchemy.orm import Session
 from schemas.cliente.cliente_schema import (
     CriarCliente,
@@ -37,8 +38,18 @@ def ler_cliente(session: Session = Depends(pegar_sessao)):
     summary="Busca um cliente pelo ID.",
     description="Retorna os dados do cliente especificado pelo ID.",
 )
-def pegar_cliente(id: int, session: Session = Depends(pegar_sessao)):
+def pegar_cliente_por_id(id: int, session: Session = Depends(pegar_sessao)):
     return cliente_service.pegar_cliente_por_id(id, session)
+
+
+@clientes_router.get(
+    "/cliente/{email}",
+    response_model=ClienteResposta,
+    summary="Busca um cliente pelo Email.",
+    description="Retorna os dados do cliente especificado pelo email.",
+)
+def pegar_cliente_por_email(email: EmailStr, session: Session = Depends(pegar_sessao)):
+    return cliente_service.pegar_cliente_por_email(str(email), session)
 
 
 @clientes_router.put(
