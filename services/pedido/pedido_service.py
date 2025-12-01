@@ -1,9 +1,10 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 
 from datetime import datetime, UTC
 from fastapi import HTTPException
 from schemas.pedido.pedido_schema import CriarPedido, AtualizarPedido
-from models import Pedido
+from models import Pedido, ItemPedido
 from services.pedido.item_pedido_service import criar_item_pedido, recriar_item_pedido
 from services.produto.produto_service import pegar_produto_por_id
 
@@ -56,9 +57,6 @@ def pegar_pedido_por_id(id: int, session: Session):
 def atualizar_pedido(dados: AtualizarPedido, session: Session):
     entity = pegar_pedido_por_id(dados.id, session)
 
-    if not entity:
-        raise HTTPException(status_code=404, detail="Pedido não encontrado.")
-
     try:
         for key, value in dados.model_dump(exclude_unset=True).items():
             setattr(entity, key, value)
@@ -81,8 +79,15 @@ def soft_delete_pedido(id: int, session: Session):
     entity.deleted_at = datetime.now(UTC)
 
     session.add(entity)
+
+    itens_pedido = session.scalars(
+        select(ItemPedido).where(ItemPedido.pedido_id == entity.id)
+    )
+
+    for item in itens_pedido:
+        item.deleted_at = datetime.now(UTC)
+
     session.commit()
-    session.refresh(entity)
     return {"message": "Produto deletado."}
 
 

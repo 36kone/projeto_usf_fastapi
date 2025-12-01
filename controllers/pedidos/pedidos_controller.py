@@ -47,7 +47,6 @@ def ler_pedidos(session: Session = Depends(pegar_sessao)):
 )
 def pegar_pedido(id: int, session: Session = Depends(pegar_sessao)):
     return pedido_service.pegar_pedido_por_id(id, session)
-    return pedido_service.pegar_pedido_por_id(id, session)
 
 
 @pedidos_router.put(

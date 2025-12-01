@@ -32,9 +32,6 @@ def pegar_produto_por_id(id: int, session: Session):
 def atualizar_produto(dados: AtualizarProduto, session: Session):
     entity = pegar_produto_por_id(dados.id, session)
 
-    if not entity:
-        raise HTTPException(status_code=404, detail="Produto não encontrado.")
-
     try:
         for key, value in dados.model_dump(exclude_unset=True).items():
             setattr(entity, key, value)
