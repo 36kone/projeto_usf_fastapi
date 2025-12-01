@@ -19,6 +19,7 @@ O projeto implementa um **CRUD** (Create, Read, Update, Delete) para **Clientes*
 
 - `main.py` - arquivo principal que inicializa a aplicação.
 - `models/` - definição das tabelas (Clientes, Produtos, Pedidos).
+- `migrations/` - migrações do banco de dados.
 - `schemas/` - schemas do Pydantic para validação de dados.
 - `services/` - funções CRUD para cada entidade (serviços que interagem com o banco).
 - `controllers/` - onde os endpoints são definidos e os serviços (`services/`) são chamados. Cada controller é responsável por receber a requisição, chamar a função apropriada do CRUD e retornar a resposta.
