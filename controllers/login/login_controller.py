@@ -7,6 +7,10 @@ from schemas.auth.auth_schema import Token
 
 login_router = APIRouter()
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 281ff50 (feat: criado login para clientes)
 @login_router.post(
     "/",
     response_model=Token,
