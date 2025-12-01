@@ -13,13 +13,13 @@ bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 app = FastAPI()
 
 
-@app.get("/teste_db", tags=["Teste DB"])
+@app.get("/api/teste_db", tags=["Teste DB"])
 def teste_conexao_db(db: Session = Depends(pegar_sessao)):
     try:
         resultado = db.execute(text("SELECT 1")).scalar()
         return {
-            "message": "Conexão com o banco de dados bem-sucedida!",
-            "result": resultado,
+            "mensagem": "Conexão com o banco de dados bem-sucedida!",
+            "resultado": resultado,
         }
     except Exception as e:
         return {"error": str(e)}

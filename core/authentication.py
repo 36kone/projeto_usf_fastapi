@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any
-from uuid import UUID
 
 from fastapi import Depends, HTTPException, Security
 from fastapi.security import (
@@ -12,12 +11,12 @@ from jose import jwt, JWTError
 from sqlalchemy import select
 
 from core.config import settings
-from db.database import pegar_sessao as db
 from models.cliente.cliente import Cliente
 from schemas.auth.auth_schema import Token
 from schemas.cliente.cliente_schema import ClienteResposta
+from db.database import pegar_sessao
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/login")
 bearer_scheme = HTTPBearer(auto_error=False)
 
 
@@ -82,6 +81,7 @@ def verificar_token(token: str = Depends(oauth2_scheme)) -> str:
 
 def pegar_usuario_logado(
     bearer: HTTPAuthorizationCredentials = Security(bearer_scheme),
+    session=Depends(pegar_sessao),
     oauth2: str | None = Depends(oauth2_scheme),
 ) -> Cliente:
     """
@@ -100,7 +100,7 @@ def pegar_usuario_logado(
         )
 
     try:
-        user_id = UUID(payload.get("sub"))
+        user_id = payload.get("sub")
     except Exception:
         raise HTTPException(
             status_code=401,
@@ -109,7 +109,7 @@ def pegar_usuario_logado(
         )
 
     query = select(Cliente).where(Cliente.id == user_id)
-    user = db.scalar(query)
+    user = session.scalar(query)
 
     if not user:
         raise HTTPException(
