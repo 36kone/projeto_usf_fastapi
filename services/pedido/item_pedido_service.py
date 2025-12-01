@@ -16,7 +16,10 @@ def recriar_item_pedido(pedido_id: int, itens: list[CriarItemPedido], session: S
     session.execute(delete(ItemPedido).where(ItemPedido.pedido_id == pedido_id))
 
     new_entities = [
-        ItemPedido(**item.model_dump(exclude_unset=True), pedido_id=pedido_id)
+        ItemPedido(
+            **item.model_dump(exclude_unset=True, exclude={"pedido_id"}),
+            pedido_id=pedido_id,
+        )
         for item in itens
     ]
 

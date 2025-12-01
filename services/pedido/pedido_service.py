@@ -4,6 +4,7 @@ from sqlalchemy import select
 from datetime import datetime, UTC
 from fastapi import HTTPException
 from schemas.pedido.pedido_schema import CriarPedido, AtualizarPedido
+from schemas.pedido.item_pedido_schema import CriarItemPedido
 from models import Pedido, ItemPedido
 from services.pedido.item_pedido_service import criar_item_pedido, recriar_item_pedido
 from services.produto.produto_service import pegar_produto_por_id
@@ -58,10 +59,28 @@ def atualizar_pedido(dados: AtualizarPedido, session: Session):
     entity = pegar_pedido_por_id(dados.id, session)
 
     try:
-        for key, value in dados.model_dump(exclude_unset=True).items():
+        for key, value in dados.model_dump(
+            exclude_unset=True, exclude={"itens"}
+        ).items():
             setattr(entity, key, value)
 
-        recriar_item_pedido(entity.id, dados.itens, session)
+        if dados.itens is not None:
+            itens_para_recriar = dados.itens
+        else:
+            itens_do_banco = (
+                session.query(ItemPedido)
+                .filter(ItemPedido.pedido_id == entity.id)
+                .all()
+            )
+
+            itens_para_recriar = [
+                CriarItemPedido.model_validate(
+                    {"produto_id": item.produto_id, "quantidade": item.quantidade}
+                )
+                for item in itens_do_banco
+            ]
+
+        recriar_item_pedido(entity.id, itens_para_recriar, session)
 
         session.add(entity)
         session.commit()

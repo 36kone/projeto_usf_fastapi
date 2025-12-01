@@ -25,7 +25,7 @@ class AtualizarPedido(BaseModel):
     data: Optional[date] = None
     status: Optional[str] = None
     total: Optional[float] = None
-    itens: Optional[List[CriarItemPedido]]
+    itens: Optional[List[CriarItemPedido]] = None
 
 
 class PedidoResposta(PedidoSchema):
