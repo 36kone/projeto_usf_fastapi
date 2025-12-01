@@ -21,7 +21,7 @@ def ler_produtos(session: Session):
     return session.query(Produto).limit(10).all()
 
 
-def pegar_produto(id: int, session: Session):
+def pegar_produto_por_id(id: int, session: Session):
     entity = session.query(Produto).filter(Produto.id == id).first()
 
     if not entity:
@@ -30,7 +30,7 @@ def pegar_produto(id: int, session: Session):
 
 
 def atualizar_produto(dados: AtualizarProduto, session: Session):
-    entity = pegar_produto(dados.id, session)
+    entity = pegar_produto_por_id(dados.id, session)
 
     if not entity:
         raise HTTPException(status_code=404, detail="Produto não encontrado.")
@@ -50,7 +50,7 @@ def atualizar_produto(dados: AtualizarProduto, session: Session):
 
 
 def soft_delete_produto(id: int, session: Session):
-    entity = pegar_produto(id, session)
+    entity = pegar_produto_por_id(id, session)
 
     entity.deleted_at = datetime.now(UTC)
 
@@ -61,7 +61,7 @@ def soft_delete_produto(id: int, session: Session):
 
 
 def hard_delete_produto(id: int, session: Session):
-    entity = pegar_produto(id, session)
+    entity = pegar_produto_por_id(id, session)
 
     session.delete(entity)
     session.commit()

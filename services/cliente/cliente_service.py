@@ -27,7 +27,7 @@ def ler_cliente(session: Session):
     return session.query(Cliente).limit(10).all()
 
 
-def pegar_cliente(id: int, session: Session):
+def pegar_cliente_por_id(id: int, session: Session):
     entity = session.query(Cliente).filter(Cliente.id == id).first()
 
     if not entity:
@@ -36,7 +36,7 @@ def pegar_cliente(id: int, session: Session):
 
 
 def atualizar_cliente(dados: AtualizarCliente, session: Session):
-    entity = pegar_cliente(dados.id, session)
+    entity = pegar_cliente_por_id(dados.id, session)
 
     if not entity:
         raise HTTPException(status_code=404, detail="Cliente não encontrado.")
@@ -56,7 +56,7 @@ def atualizar_cliente(dados: AtualizarCliente, session: Session):
 
 
 def soft_delete_cliente(id: int, session: Session):
-    entity = pegar_cliente(id, session)
+    entity = pegar_cliente_por_id(id, session)
 
     entity.deleted_at = datetime.now(UTC)
 
@@ -67,7 +67,7 @@ def soft_delete_cliente(id: int, session: Session):
 
 
 def hard_delete_cliente(id: int, session: Session):
-    entity = pegar_cliente(id, session)
+    entity = pegar_cliente_por_id(id, session)
 
     session.delete(entity)
     session.commit()
