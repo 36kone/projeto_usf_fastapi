@@ -16,7 +16,6 @@ class PedidoSchema(BaseModel):
 class CriarPedido(BaseModel):
     cliente_id: int
     data: date
-    status: str
     itens: list[CriarItemPedido]
 
 

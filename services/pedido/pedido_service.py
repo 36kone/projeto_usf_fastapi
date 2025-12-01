@@ -12,6 +12,7 @@ def criar_pedido(pedido: CriarPedido, session: Session):
     entity = Pedido(**pedido.model_dump(exclude_unset=True, exclude={"itens"}))
 
     entity.total = 0.0
+    entity.status = "pendente"
 
     session.add(entity)
     session.flush()
